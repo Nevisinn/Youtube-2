@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %} Понравившиеся {% endblock title %}
+{% block content %}
+    <h1>Понравившиеся</h1>
+    <ul>
+        {% for video in liked_videos %}
+                <li>
+                  <a href="{% url 'video_view' video.url %}">
+                    {{ video.title }}
+                    <br>
+                    <img src="{{ video.image.url }}" alt="{{ video.title }}" width="350" height="200">
+                  </a>
+                </li>
+        {% empty %}
+            <li>У вас нет видео</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

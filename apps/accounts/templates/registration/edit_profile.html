@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %} Редактировать профиль {% endblock title %}
+{% block content %}
+  <h1>Редактирование профиля</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <a href="{% url 'password_reset' %}" class="btn btn-primary">Сбросить пароль</a>
+    <br>
+    <br>
+    <button type="submit">Сохранить изменения</button>
+  </form>
+{% endblock %}

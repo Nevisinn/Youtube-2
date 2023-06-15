@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %} Видео {% endblock title %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'video/style_video_list.css' %}">
+    <h1>Видео</h1>
+    <div class="video-container">
+        {% if videos %}
+            {% for video in videos %}
+                <div class="row">
+                    <a href="{{ video.url }}">
+                        <img src="{{ video.image.url }}" alt="{{ video.title }}" width="350" height="200">
+                        <h4>{{ video.title }}</h4>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Видео еще не добавлены.</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+.video-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 100px;
+}
+
+.video-item {
+    flex-basis: calc(33.33% - 10px);
+    margin-bottom: 100px;
+    box-sizing: border-box;
+    padding: 10px;
+    margin-right: 20px;
+}
+
+.video-item img {
+    width: 100%;
+    height: auto;
+}

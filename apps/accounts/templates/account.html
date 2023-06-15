@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %} Мой аккаунт {%endblock title%}
+{% block content %}
+    <h1>Личный кабинет</h1>
+    <ul>
+        <li><a href="{% url 'my_videos' %}">Мои видео</a></li>
+        <li><a href="{% url 'liked_videos' %}">Понравившиеся</a></li>
+        <li><a href="{% url 'subscribed_channels' %}">Мои подписки</a></li>
+        <li><a href="{% url 'edit_profile' %}">Редактировать профиль</a></li>
+    </ul>
+{% endblock %}

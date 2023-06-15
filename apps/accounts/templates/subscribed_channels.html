@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %} Подписки {%endblock title%}
+{% block content %}
+    <h2>Мои подписки:</h2>
+    {% if channel_users %}
+      <ul>
+          {% for user in channel_users %}
+            <li><a href="{% url 'channel_videos' username=user.username %}">{{ user.username }}</a></li>
+          {% endfor %}
+      </ul>
+    {% else %}
+      <p>Вы ни на кого не подписаны.</p>
+    {% endif %}
+{% endblock %}

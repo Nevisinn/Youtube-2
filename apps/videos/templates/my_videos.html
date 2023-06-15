@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %} Мои видео {% endblock title %}
+{% block content %}
+    <h1>Мои видео</h1>
+    <form action="{% url 'video_create' %}">
+        <button type="submit">Добавить видео</button>
+    </form>
+    <br>
+    <ul>
+        {% for video in my_videos %}
+            <li>
+                <a href="{% url 'video_view' video.url %}">
+                    {{ video.title }}
+                    {% if request.user == video.author %}
+                        <a href="{% url 'video_update' video.url %}" class="btn btn-primary">Редактировать видео</a>
+                        <a href="{% url 'video_delete' video.url %}" class="btn btn-primary">Удалить видео</a>
+                    {% endif %}
+                    <br>
+                    <img src="{{ video.image.url }}" alt="{{ video.title }}" width="350" height="200">
+                </a>
+            </li>
+        {% empty %}
+            У вас нет видео
+        {% endfor %}
+    </ul>
+{% endblock %}

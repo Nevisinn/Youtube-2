@@ -1,0 +1,76 @@
+/* Обновленные стили для sidebar и menu */
+.sidebar {
+    background-color: #ffffff;
+    width: 200px;
+    padding: 20px;
+}
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu li {
+    margin-bottom: 10px;
+}
+
+.menu li a {
+    color: #333;
+    text-decoration: none;
+}
+
+.menu li a:hover {
+    background-color: #ccc;
+}
+
+/* Обновленные стили для search-form и right-aligned */
+#search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+}
+
+#search-form input[type="text"] {
+    width: 400px;
+    height: 40px;
+    font-size: 16px;
+    padding: 5px;
+}
+
+#search-form button[type="submit"] {
+    height: 40px;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.right-aligned {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+}
+
+.right-aligned a {
+    margin-right: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.right-aligned a:hover {
+    color: #999;
+}
+
+.right-aligned p {
+    margin-top: 10px;
+}
+
+.right-aligned p a {
+    margin-right: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.right-aligned p a:hover {
+    color: #999;
+}

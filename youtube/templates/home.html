@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>
+        Главна страница
+    </h1>
+    {% if user.is_authenticated %}
+        <a href = "{% url 'logout' %}"> Выход </a>
+    {% else %}
+        <a href = "{% url 'login' %}"> Вход </a>
+        <a href = "{% url 'register' %}"> Регистрация </a>
+    {% endif %}
+{% endblock content %}

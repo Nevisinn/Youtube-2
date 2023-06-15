@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %} Отказано {%endblock title%}
+{% block content %}
+  <div class ='row'>
+    <p>Ваша ссылка не корректна, войдите снова</p>
+      <a href = "{% url 'login' %}">Войти</a>
+  </div>
+{% endblock content %}

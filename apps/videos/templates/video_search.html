@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %} Поиск видео {% endblock title %}
+{% block content %}
+    {% if videos %}
+        <ul>
+            {% for video in videos %}
+                <li>
+                    <a href="{% url 'video_view' video.url %}">
+                        {{ video.title }}
+                        <br>
+                        <img src="{{ video.image.url }}" alt="{{ video.title }}" width="350" height="200">
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        Ничего не найдено
+    {% endif %}
+{% endblock %}

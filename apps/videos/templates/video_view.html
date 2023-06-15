@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}{{ video.title }}{% endblock title %}
+{% block content %}
+  <!-- Блок отображения видео -->
+  <h1>{{ video.title }}</h1>
+  <video controls autoplay width="850" height="512">
+    <source src="{{ video.video_file.url }}" type="video/mp4">
+  </video>
+  <h3><a href="{% url 'channel_videos' username=video.author.username %}">{{ video.author.username }}</a></h3>
+
+  {% if user.username != video.author.username and user.is_authenticated %}
+    <button id="subscribe-button" data-channel="{{ video.author.username }}">
+      {% if is_subscribed %}
+        Отписаться
+      {% else %}
+        Подписаться
+      {% endif %}
+    </button>
+  {% endif %}
+  <span id="subscribers-count">{{ video.author.subscribers_count }}</span> подписчиков
+  <script>
+    // Функция для обработки подписки
+    function handleSubscription() {
+      var subscribeButton = document.getElementById('subscribe-button');
+      var channelUsername = subscribeButton.getAttribute('data-channel');
+
+      // Отправка POST-запроса на сервер для переключения подписки
+      fetch('/subscribe_toggle/' + channelUsername + '/')
+        .then(response => response.json())
+        .then(data => {
+          if (data.subscribed) {
+            subscribeButton.textContent = 'Отписаться';
+          } else {
+            subscribeButton.textContent = 'Подписаться';
+          }
+          document.getElementById('subscribers-count').textContent = data.subscribers_count;
+        })
+        .catch(error => {
+          console.log('Ошибка:', error);
+        });
+    }
+
+    // Обработчик события для кнопки подписки
+    var subscribeButton = document.getElementById('subscribe-button');
+    if (subscribeButton) {
+      subscribeButton.addEventListener('click', handleSubscription);
+    }
+  </script>
+
+  <p>Описание: {{ video.description }}</p>
+  <p>{{ video.view_count }} Просмотров</p>
+  <p>{{ video.uploaded_at }} мск</p>
+
+  <!-- Блок для лайков / дизлайков -->
+  <p>Likes: <span id="like-count">{{ like_count }}</span></p>
+  <p>Dislikes: <span id="dislike-count">{{ dislike_count }}</span></p>
+  {% if user.is_authenticated %}
+    <button id="like-button" class="like-button {% if user_liked %}active{% endif %}" data-action="like">
+      <i class="fa fa-thumbs-up"></i> Like
+    </button>
+    <button id="dislike-button" data-action="dislike">Dislike</button>
+  {% endif %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Функция для получения CSRF-токена
+      function getCSRFToken() {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i].trim();
+          if (cookie.substring(0, 10) === 'csrftoken=') {
+            return cookie.substring(10);
+          }
+        }
+        return '';
+      }
+
+      // Функция для выполнения AJAX-запроса с передачей CSRF-токена
+      function sendAjaxRequest(url, action) {
+        var csrfToken = getCSRFToken();
+        return $.ajax({
+          url: url,
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': csrfToken,
+          },
+          data: {
+            action: action,
+          },
+        });
+      }
+
+      function updateLikeDislikeCounts() {
+        var url = window.location.href;
+
+        sendAjaxRequest(url, 'get_counts').done(function(data) {
+          $('#like-count').text(data.like_count);
+          $('#dislike-count').text(data.dislike_count);
+        });
+      }
+
+      $('#like-button, #dislike-button, #unlike-button').click(function() {
+        var action = $(this).data('action');
+        var url = window.location.href;
+
+        sendAjaxRequest(url, action).done(function(data) {
+          $('#like-count').text(data.like_count);
+          $('#dislike-count').text(data.dislike_count);
+        });
+      });
+      updateLikeDislikeCounts();
+    });
+  </script>
+
+  <!-- Блок для отображения комментариев -->
+  <div id="comments-section">
+    <h2>Комментарии</h2>
+    <h5>{{ comments_count }} Комментариев</h5>
+    {% for comment in comments %}
+      <div class="comment{% if forloop.counter > 3 %} hidden-comment{% endif %}">
+        <p>{{ comment.user.username }} {{ comment.created_at }}</p>
+        <p>{{ comment.text }}</p>
+      </div>
+    {% empty %}
+      <p>Комментариев пока нет.</p>
+    {% endfor %}
+    {% if comments_count > 3 %}
+      <button id="expand-comments-btn" onclick="expandComments()">Развернуть полностью</button>
+    {% endif %}
+  </div>
+
+  <script>
+    function expandComments() {
+      var hiddenComments = document.getElementsByClassName('hidden-comment');
+      for (var i = 0; i < hiddenComments.length; i++) {
+        hiddenComments[i].classList.remove('hidden-comment');
+      }
+      document.getElementById('expand-comments-btn').style.display = 'none';
+    }
+  </script>
+
+  <style>
+    .hidden-comment {
+      display: none;
+    }
+  </style>
+
+  <!-- Форма для добавления комментария -->
+  {% if user.is_authenticated %}
+    <form method="post" action="{% url 'video_view' video.url %}">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button type="submit">Добавить комментарий</button>
+    </form>
+  {% endif %}
+{% endblock %}

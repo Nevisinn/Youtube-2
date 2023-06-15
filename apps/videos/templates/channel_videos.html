@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ channel_user.username  }}{% endblock title %}
+{% block content %}
+    <h1>{{ channel_user.username }} - Видео</h1>
+    Подписчиков: <span id="subscribers-count">{{ channel_user.subscribers_count }}</span>
+
+    <button id="subscribe-button" data-channel="{{ channel_user.username }}">
+        {% if is_subscribed %}
+            Отписаться
+        {% else %}
+            Подписаться
+        {% endif %}
+    </button>
+
+    <script>
+        // Функция для обработки подписки
+        function handleSubscription() {
+            var subscribeButton = document.getElementById('subscribe-button');
+            var channelUsername = subscribeButton.getAttribute('data-channel');
+
+            // Отправка POST-запроса на сервер для переключения подписки
+            fetch('/subscribe_toggle/' + channelUsername + '/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.subscribed) {
+                        subscribeButton.textContent = 'Отписаться';
+                    } else {
+                        subscribeButton.textContent = 'Подписаться';
+                    }
+                    document.getElementById('subscribers-count').textContent = data.subscribers_count;
+                })
+                .catch(error => {
+                    console.log('Ошибка:', error);
+                });
+        }
+
+        // Обработчик события для кнопки подписки
+        var subscribeButton = document.getElementById('subscribe-button');
+        if (subscribeButton) {
+            subscribeButton.addEventListener('click', handleSubscription);
+        }
+    </script>
+
+    {% if videos %}
+        <ul>
+            {% for video in videos %}
+                <div class="row">
+                    <a href="{% url 'video_view' url=video.url %}">
+                        <img src="{{ video.image.url }}" alt="{{ video.title }}" width="350" height="200">
+                        <h4>{{ video.title }}</h4>
+                    </a>
+                </div>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>На этом канале нет видео.</p>
+    {% endif %}
+{% endblock %}

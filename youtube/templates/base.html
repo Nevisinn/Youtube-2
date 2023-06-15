@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>{% block title %} Default title {% endblock title %}</title>
+</head>
+<body class = "container">
+<ul class = "list-group">
+    <li class = "list group-item">
+        User: {{ user }}
+    </li>
+    <li class = "list group-item">
+        <a href = "{% url 'home' %}">На главную</a>
+    </li>
+</ul>
+    <div> {% block content %} {% endblock content %} </div>
+</body>
+</html>
