@@ -1,2 +1,5 @@
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
+
+
+def custom_404_view(request, exception):
+    return render(request, '404.html', status=404)

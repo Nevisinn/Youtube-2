@@ -9,34 +9,51 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os.path
 from pathlib import Path
+
+import dotenv
+from storages.backends.s3boto3 import S3Boto3Storage
+
+from youtube.views import custom_404_view
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+dotenv_file = os.path.join(BASE_DIR, ".env")
+dotenv.load_dotenv(dotenv_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-u!%pb_bd(rsh(^e@!)7*2dlkp-t)u5kc4(y)3rmq8pwx!%#$s1'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '158.160.40.2']
 
 AUTH_USER_MODEL = 'accounts.User'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_ENDPOINT_URL = 'https://storage.yandexcloud.net'
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
 # Application definition
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'igor.s@lamart.site'
-EMAIL_HOST_PASSWORD = 'xfrxhtrjrpxxqvkx'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
@@ -49,7 +66,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts',
+    'apps.accounts',
+    'apps.videos',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -68,8 +87,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR/'youtube/templates/',
-            BASE_DIR/'accounts/templates/registration',
+            BASE_DIR / 'youtube/templates/',
+            BASE_DIR / 'apps/accounts/templates/registration',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -85,21 +104,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'youtube.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'youtube',
-        'USER': 'postgres',
-        'PASSWORD': 'dfcz2012',
-        'HOST': '127.0.0.1',
-        'PORT': '',
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+        'OPTIONS': {
+            'sslmode': os.getenv('SSLMODE'),
+            'target_session_attrs': os.getenv('TARGET_SESSION_ATTRS'),
+            'sslrootcert':  os.getenv('SSLROOTCERT'),
+        },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -119,24 +141,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
